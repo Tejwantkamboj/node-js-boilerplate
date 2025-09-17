@@ -1,0 +1,14 @@
+# Dependencies
+node_modules
+
+# yarn error logs
+yarn-error.log
+yarn.lock
+
+# Environment varibales
+.env*
+!.env*.example
+
+uploads/
+# Code coverage
+coverage
