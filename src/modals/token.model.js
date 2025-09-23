@@ -1,20 +1,29 @@
-import mogoose, { Schema } from "mongoose";
+import mongoose, { Schema } from 'mongoose';
 
 const tokenSchema = new Schema(
   {
-    access: {
+    token: {
       type: String,
       required: true,
-      trim: true,
+      index: true,
     },
-    refresh: {
-      type: String,
+    user: {
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: 'User',
       required: true,
-      trim: true,
     },
-    userId: {
-      type: mogoose.Schema.Types.ObjectId,
-      ref: "User",
+    type: {
+      type: String,
+      enum: ['refresh', 'access', 'resetPassword', 'forgotPassword', 'verifyEmail'],
+      required: true,
+    },
+    expires: {
+      type: Date,
+      required: true,
+    },
+    blacklisted: {
+      type: Boolean,
+      default: false,
     },
   },
   {
@@ -22,5 +31,5 @@ const tokenSchema = new Schema(
   }
 );
 
-const Token = mogoose.model("Token", tokenSchema);
+const Token = mongoose.model('Token', tokenSchema);
 export default Token;
