@@ -1,4 +1,3 @@
-import httpStatus from 'http-status';
 import crypto from 'crypto';
 
 const generateOtp = () => {
