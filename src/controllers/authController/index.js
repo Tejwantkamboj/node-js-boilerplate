@@ -3,6 +3,7 @@ import sendResponse from '../../utils/sendResponse.js';
 import catchAsync from '../../utils/catchAsync.js';
 import httpStatus from 'http-status';
 
+
 const register = catchAsync(async (req, res) => {});
 
 const login = catchAsync(async (req, res) => {
