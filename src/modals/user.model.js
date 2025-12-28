@@ -1,6 +1,5 @@
-import mogoose, { Schema } from "mongoose";
-import bcrypt from "bcrypt";
-
+import mogoose, { Schema } from 'mongoose';
+import bcrypt from 'bcrypt';
 
 const userSchema = new Schema(
   {
@@ -12,20 +11,18 @@ const userSchema = new Schema(
       lowercase: true,
       validate(value) {
         if (!validator.isEmail(value)) {
-          throw new Error("Invalid email");
+          throw new Error('Invalid email');
         }
       },
     },
     password: {
       type: String,
-      // required: true,
+      required: true,
       trim: true,
       minlength: 8,
       validate(value) {
         if (!value.match(/\d/) || !value.match(/[a-zA-Z]/)) {
-          throw new Error(
-            "Password must contain at least one letter and one number"
-          );
+          throw new Error('Password must contain at least one letter and one number');
         }
       },
       private: true, // used by the toJSON plugin
@@ -33,12 +30,28 @@ const userSchema = new Schema(
     countryCode: {
       type: String,
       required: true,
-      trim: true,
+      validate: {
+        validator: function (value) {
+          return /^\+\d{1,3}$/.test(value);
+        },
+        message: (props) =>
+          `${props.value} is not a valid country code! It should start with '+' followed by 1 to 3 digits.`,
+      },
+      minlength: 2,
+      maxlength: 4,
     },
-    mobileNo: {
+    phone: {
       type: String,
-      required: true,
-      trim: true,
+      default: null,
+      required: false,
+      validate: {
+        validator: function (value) {
+          if (value == null) return true;
+          return /^\d{7,13}$/.test(value);
+        },
+        message: (props) =>
+          `${props.value} is not a valid phone number! It should contain only digits and be between 7 and 13 digits.`,
+      },
     },
     firstName: {
       type: String,
@@ -50,7 +63,6 @@ const userSchema = new Schema(
       required: true,
       trim: true,
     },
-    password: {},
     isEmailVerified: {
       type: Boolean,
       default: false,
@@ -60,12 +72,12 @@ const userSchema = new Schema(
     },
     profilePic: {
       type: String,
-      default: "",
+      default: '',
     },
     role: {
       type: String,
-      enum: ["user", "superAdmin", "admin"],
-      default: "user",
+      enum: ['user', 'superAdmin', 'admin'],
+      default: 'user',
     },
   },
   {
@@ -106,5 +118,5 @@ const userSchema = new Schema(
 //   next();
 // });
 
-const User = mogoose.model("User", userSchema);
+const User = mogoose.model('User', userSchema);
 export default User;
