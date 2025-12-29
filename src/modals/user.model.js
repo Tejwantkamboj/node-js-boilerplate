@@ -29,7 +29,8 @@ const userSchema = new Schema(
     },
     countryCode: {
       type: String,
-      required: true,
+      default: null,
+      required: false,
       validate: {
         validator: function (value) {
           return /^\+\d{1,3}$/.test(value);
@@ -72,7 +73,6 @@ const userSchema = new Schema(
     },
     profilePic: {
       type: String,
-      default: '',
     },
     role: {
       type: String,
@@ -85,38 +85,44 @@ const userSchema = new Schema(
   }
 );
 
-// add plugin that converts mongoose to json
-// userSchema.plugin(toJSON);
-// userSchema.plugin(paginate);
+userSchema.plugin(toJSON);
+userSchema.plugin(paginate);
 
-// /**
-//  * Check if email is taken
-//  * @param {string} email - The user's email
-//  * @param {ObjectId} [excludeUserId] - The id of the user to be excluded
-//  * @returns {Promise<boolean>}
-//  */
-// userSchema.statics.isEmailTaken = async function (email, excludeUserId) {
-//   const user = await this.findOne({ email, _id: { $ne: excludeUserId } });
-//   return !!user;
-// };
+userSchema.statics.isEmailTaken = async function (email, role, excludeUserId) {
+  const user = await this.findOne({ email, role, _id: { $ne: excludeUserId } });
+  return !!user;
+};
 
-// /**
-//  * Check if password matches the user's password
-//  * @param {string} password
-//  * @returns {Promise<boolean>}
-//  */
-// userSchema.methods.isPasswordMatch = async function (password) {
-//   const user = this;
-//   return bcrypt.compare(password, user.password);
-// };
+userSchema.pre('save', async function (next) {
+  const user = this;
+  if (user.isNew || user.isModified('email')) {
+    const emailTaken = await this.constructor.isEmailTaken(user.email, user.role, user._id);
+    if (emailTaken) {
+      return next(new Error('Email is already taken for this role'));
+    }
+  }
 
-// userSchema.pre("save", async function (next) {
-//   const user = this;
-//   if (user.isModified("password")) {
-//     user.password = await bcrypt.hash(user.password, 8);
-//   }
-//   next();
-// });
+  if (user.isNew || user.isModified('phoneNumber')) {
+    const phoneTaken = await this.constructor.isPhoneNumber(user.phoneNumber, user._id);
+    if (phoneTaken) {
+      return next(new Error('Phone number is already taken for this role'));
+    }
+  }
+  next();
+});
+
+userSchema.methods.isPasswordMatch = async function (password) {
+  const user = this;
+  return bcrypt.compare(password, user.password);
+};
+
+userSchema.pre('save', async function (next) {
+  const user = this;
+  if (user.isModified('password')) {
+    user.password = await bcrypt.hash(user.password, 8);
+  }
+  next();
+});
 
 const User = mogoose.model('User', userSchema);
 export default User;

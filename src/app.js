@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-
+import config from './config/config.js';
 const app = express();
 
 app.use(express.json());
@@ -15,4 +15,5 @@ app.use('/v1', (req, res) => {
 
 app.listen(7000, () => {
   console.log('server is listening');
+  console.log("congig",config)
 });
