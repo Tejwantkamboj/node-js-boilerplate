@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import moment from 'moment';
 import httpStatus from 'http-status';
-import ApiError from '../utils/ApiError';
+import { ApiError } from '../utils/index.js';
 import { User, Token } from '../modals';
 import config from '../config/config';
 
@@ -55,8 +55,9 @@ const verifyToken = async (token, type) => {
 
 const generateAuthTokens = async (user) => {
   const accessToken = generateToken(user, 'access');
-
   const refreshToken = generateToken(user, 'refresh');
+
+  await saveToken(accessToken, user._id);
   await saveToken(refreshToken, user._id);
 
   return {

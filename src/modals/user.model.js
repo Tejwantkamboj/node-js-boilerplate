@@ -1,6 +1,6 @@
 import mogoose, { Schema } from 'mongoose';
 import bcrypt from 'bcrypt';
-
+import { toJSON, paginate } from './plugin/index.js';
 const userSchema = new Schema(
   {
     email: {
@@ -82,7 +82,7 @@ const userSchema = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 userSchema.plugin(toJSON);
@@ -91,6 +91,11 @@ userSchema.plugin(paginate);
 userSchema.statics.isEmailTaken = async function (email, role, excludeUserId) {
   const user = await this.findOne({ email, role, _id: { $ne: excludeUserId } });
   return !!user;
+};
+
+userSchema.methods.isPasswordMatch = async function (password) {
+  const user = this;
+  return bcrypt.compare(password, user.password);
 };
 
 userSchema.pre('save', async function (next) {
@@ -110,11 +115,6 @@ userSchema.pre('save', async function (next) {
   }
   next();
 });
-
-userSchema.methods.isPasswordMatch = async function (password) {
-  const user = this;
-  return bcrypt.compare(password, user.password);
-};
 
 userSchema.pre('save', async function (next) {
   const user = this;

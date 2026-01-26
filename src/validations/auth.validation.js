@@ -2,7 +2,7 @@ import Joi from 'joi';
 import { password } from './custom.validations.js';
 
 export const register = {
-  body: Joi.object.keys({
+  body: Joi.object().keys({
     email: Joi.string().required().email(),
     password: Joi.string().required().custom(password),
     firstName: Joi.string().required(),

@@ -8,7 +8,6 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-console.log("env file congig", process.env.PORT)
 const config="";
 // const envVarsSchema = Joi.object()
 //   .keys({
