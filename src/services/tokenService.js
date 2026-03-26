@@ -2,10 +2,10 @@ import jwt from 'jsonwebtoken';
 import moment from 'moment';
 import httpStatus from 'http-status';
 import { ApiError } from '../utils/index.js';
-import { User, Token } from '../modals';
-import config from '../config/config';
+import { User, Token } from '../modals/index.js';
+import config from '../config/config.js';
 
-const generateToken = (user, type) => {
+const generateToken = async (user, type) => {
   let expires;
 
   if (type === 'access') {
@@ -28,7 +28,7 @@ const generateToken = (user, type) => {
     role: user.role,
   };
 
-  const token = jwt.sign(payload, secret);
+  const token = jwt.sign(payload, config.jwt.secret);
   const date = expires.toDate();
   return { token, date, type };
 };

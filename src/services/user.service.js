@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import { ApiError } from '../utils/index.js';
-import { User, Token } from '../modals';
+import { User, Token } from '../modals/index.js';
 
 const createUser = async (userBody) => {
   return User.create(userBody);
@@ -16,11 +16,19 @@ const queryUsers = async (filter, options) => {
 };
 
 const getUserById = async (id) => {
-  return User.findById(id);
+  const user = await User.findById(id);
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+  }
+  return user;
 };
 
-const getUserByEmail = async (email, role) => {
-  return User.findOne({ email, role });
+const getUserByEmail = async (email) => {
+  const user = User.findOne({ email });
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+  }
+  return user;
 };
 
 const updateUserById = async (userId, updateBody) => {

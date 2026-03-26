@@ -1,6 +1,7 @@
 import mogoose, { Schema } from 'mongoose';
 import bcrypt from 'bcrypt';
 import { toJSON, paginate } from './plugin/index.js';
+
 const userSchema = new Schema(
   {
     email: {
@@ -9,11 +10,13 @@ const userSchema = new Schema(
       unique: true,
       trim: true,
       lowercase: true,
-      validate(value) {
-        if (!validator.isEmail(value)) {
-          throw new Error('Invalid email');
-        }
-      },
+      // validate: {
+      //   validator: function (value) {
+      //     if (!validator.isEmail(value)) {
+      //       throw new Error('Invalid email');
+      //     }
+      //   },
+      // },
     },
     password: {
       type: String,
@@ -29,30 +32,30 @@ const userSchema = new Schema(
     },
     countryCode: {
       type: String,
-      default: null,
-      required: false,
-      validate: {
-        validator: function (value) {
-          return /^\+\d{1,3}$/.test(value);
-        },
-        message: (props) =>
-          `${props.value} is not a valid country code! It should start with '+' followed by 1 to 3 digits.`,
-      },
-      minlength: 2,
-      maxlength: 4,
+      // default: null,
+      // required: false,
+      // validate: {
+      //   validator: function (value) {
+      //     return /^\+\d{1,3}$/.test(value);
+      //   },
+      //   message: (props) =>
+      //     `${props.value} is not a valid country code! It should start with '+' followed by 1 to 3 digits.`,
+      // },
+      // minlength: 2,
+      // maxlength: 4,
     },
     phone: {
       type: String,
-      default: null,
-      required: false,
-      validate: {
-        validator: function (value) {
-          if (value == null) return true;
-          return /^\d{7,13}$/.test(value);
-        },
-        message: (props) =>
-          `${props.value} is not a valid phone number! It should contain only digits and be between 7 and 13 digits.`,
-      },
+      // default: null,
+      // required: false,
+      // validate: {
+      //   validator: function (value) {
+      //     if (value == null) return true;
+      //     return /^\d{7,13}$/.test(value);
+      //   },
+      //   message: (props) =>
+      //     `${props.value} is not a valid phone number! It should contain only digits and be between 7 and 13 digits.`,
+      // },
     },
     firstName: {
       type: String,
@@ -98,23 +101,23 @@ userSchema.methods.isPasswordMatch = async function (password) {
   return bcrypt.compare(password, user.password);
 };
 
-userSchema.pre('save', async function (next) {
-  const user = this;
-  if (user.isNew || user.isModified('email')) {
-    const emailTaken = await this.constructor.isEmailTaken(user.email, user.role, user._id);
-    if (emailTaken) {
-      return next(new Error('Email is already taken for this role'));
-    }
-  }
+// userSchema.pre('save', async function (next) {
+//   const user = this;
+//   if (user.isNew || user.isModified('email')) {
+//     const emailTaken = await this.constructor.isEmailTaken(user.email, user.role, user._id);
+//     if (emailTaken) {
+//       return next(new Error('Email is already taken for this role'));
+//     }
+//   }
 
-  if (user.isNew || user.isModified('phoneNumber')) {
-    const phoneTaken = await this.constructor.isPhoneNumber(user.phoneNumber, user._id);
-    if (phoneTaken) {
-      return next(new Error('Phone number is already taken for this role'));
-    }
-  }
-  next();
-});
+//   if (user.isNew || user.isModified('phoneNumber')) {
+//     const phoneTaken = await this.constructor.isPhoneNumber(user.phoneNumber, user._id);
+//     if (phoneTaken) {
+//       return next(new Error('Phone number is already taken for this role'));
+//     }
+//   }
+//   next();
+// });
 
 userSchema.pre('save', async function (next) {
   const user = this;
