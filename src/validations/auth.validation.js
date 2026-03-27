@@ -12,7 +12,7 @@ export const register = {
 
 export const login = {
   body: Joi.object().keys({
-    email: Joi.string().required(),
+    email: Joi.string().required().email(),
     password: Joi.string().required(),
     role: Joi.string().required(),
   }),
@@ -33,13 +33,13 @@ export const changePassword = {
 
 export const forgotPassword = {
   body: Joi.object().keys({
-    email: Joi.string().required(),
+    email: Joi.string().required().email(),
   }),
 };
 
 export const resetPassword = {
   body: Joi.object().keys({
-    email: Joi.string().required(),
+    email: Joi.string().required().email(),
     token: Joi.string().required(),
     password: Joi.string().required().custom(password),
   }),
@@ -47,14 +47,14 @@ export const resetPassword = {
 
 export const verifyRegisterOtp = {
   body: Joi.object().keys({
-    email: Joi.string().required(),
-    otp: Joi.string().required(),
+    email: Joi.string().required().email(),
+    otp: Joi.number().required(),
   }),
 };
 
 export const verifyForgotPasswordOtp = {
   body: Joi.object().keys({
-    email: Joi.string().required(),
-    otp: Joi.string().required(),
+    email: Joi.string().required().email(),
+    otp: Joi.number().required(),
   }),
 };

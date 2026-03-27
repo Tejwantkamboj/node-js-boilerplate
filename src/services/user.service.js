@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 import { ApiError } from '../utils/index.js';
 import { User, Token } from '../modals/index.js';
+import httpStatus from 'http-status';
 
 const createUser = async (userBody) => {
   return User.create(userBody);
@@ -16,7 +17,7 @@ const queryUsers = async (filter, options) => {
 };
 
 const getUserById = async (id) => {
-  const user = await User.findById(id);
+  const user = await User.findById(id).lean();
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
   }
@@ -24,7 +25,7 @@ const getUserById = async (id) => {
 };
 
 const getUserByEmail = async (email) => {
-  const user = User.findOne({ email });
+  const user = await User.findOne({ email });
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
   }

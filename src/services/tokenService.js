@@ -54,8 +54,8 @@ const verifyToken = async (token, type) => {
 };
 
 const generateAuthTokens = async (user) => {
-  const accessToken = generateToken(user, 'access');
-  const refreshToken = generateToken(user, 'refresh');
+  const accessToken = await generateToken(user, 'access');
+  const refreshToken = await generateToken(user, 'refresh');
 
   await saveToken(accessToken, user._id);
   await saveToken(refreshToken, user._id);
@@ -77,13 +77,13 @@ const generateResetPasswordToken = async (email) => {
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'No users found with this email');
   }
-  const resetPasswordToken = generateToken(user, 'resetPassword');
+  const resetPasswordToken = await generateToken(user, 'resetPassword');
   await saveToken(resetPasswordToken, user.id);
   return resetPasswordToken.token;
 };
 
 const generateVerifyEmailToken = async (user) => {
-  const verifyEmailToken = generateToken(user, 'VERIFY_EMAIL');
+  const verifyEmailToken = await generateToken(user, 'VERIFY_EMAIL');
   await saveToken(verifyEmailToken, user.id);
   return verifyEmailToken.token;
 };

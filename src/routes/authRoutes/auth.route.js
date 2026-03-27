@@ -1,4 +1,5 @@
 import express from 'express';
+import authMiddleware from '../../middlewares/auth.js';
 import {
   changePassword,
   forgotPassword,
@@ -16,7 +17,7 @@ const router = express.Router();
 router.post('/register', validate(authValidation.register), register);
 router.post('/verify-register-otp', validate(authValidation.verifyRegisterOtp), verifyRegisterOtp);
 router.post('/login', validate(authValidation.login), login);
-router.post('/change-password', validate(authValidation.changePassword), changePassword);
+router.post('/change-password', authMiddleware, validate(authValidation.changePassword), changePassword);
 router.post('/forgot-password', validate(authValidation.forgotPassword), forgotPassword);
 router.post('/reset-password', validate(authValidation.resetPassword), resetPasssword);
 router.post('/verify-forgot-password-otp', validate(authValidation.verifyForgotPasswordOtp), verifyForgotPasswordOtp);
