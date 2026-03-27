@@ -8,9 +8,8 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
-// app.options('*', cors());
+app.options(/.*/, cors());
 
-// v1 api routes
 app.use('/v1', routes);
 
 console.log('config of env', config.port);
