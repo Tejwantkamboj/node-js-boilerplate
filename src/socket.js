@@ -1,37 +1,55 @@
-import { Server } from 'socket.io';
+import { io } from '../app.js';
+import jwt from 'jsonwebtoken';
+import config from './config/config.js';
+import { User } from '../models/index.js';
 
-let io;
+const socketAuth = async (socket, next) => {
+  const token = socket.handshake.headers?.token;
 
-const initializeSocket = (server) => {
-  io = new Server(server, {
-    cors: {
-      origin: '*',
-      methods: ['GET', 'POST'],
-    },
-  });
-
-  io.on('connection', (socket) => {
-    console.log(`Socket connected: ${socket.id}`);
-
-    socket.emit('connected', {
-      message: 'Socket.IO server is ready',
-      socketId: socket.id,
-    });
-
-    socket.on('disconnect', (reason) => {
-      console.log(`Socket disconnected: ${socket.id} (${reason})`);
-    });
-  });
-
-  return io;
-};
-
-const getIo = () => {
-  if (!io) {
-    throw new Error('Socket.IO has not been initialized yet');
+  if (!token) {
+    console.warn('Socket auth failed: No token provided');
+    return next(new Error('Unauthorized: No token'));
   }
 
-  return io;
+  try {
+    const decoded = jwt.verify(token, config.jwt.secret);
+
+    const userId = decoded.sub;
+    if (!userId) {
+      return next(new Error('Unauthorized: Invalid token payload'));
+    }
+    const user = await User.findById(userId);
+    if (!user) {
+      return next(new Error('Unauthorized: User not found'));
+    }
+    socket.user = user;
+    next();
+  } catch (err) {
+    console.error('Socket auth failed:', err.message);
+    next(new Error('Unauthorized: Invalid token'));
+  }
 };
 
-export { getIo, initializeSocket };
+io.use(socketAuth);
+
+// ✅ CONNECTION
+io.on('connection', (socket) => {
+  console.log('User connected:', socket.user._id);
+
+  // ✅ JOIN USER ROOM (important for chat)
+  socket.join(socket.user._id.toString());
+
+  socket.on('message', (msg) => {
+    console.log('message:', msg);
+
+    // broadcast example
+    io.emit('message', {
+      user: socket.user._id,
+      text: msg,
+    });
+  });
+
+  socket.on('disconnect', () => {
+    console.log('User disconnected:', socket.user._id);
+  });
+});
