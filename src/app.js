@@ -39,8 +39,8 @@ app.set('io', io);
 
 server.listen(config.port, async () => {
   const conn = await mongoose.connect(config.mongoose.url);
-  console.log(`MongoDB Connected: ${conn.connection.host}`);
-  console.log(`Server running on port ${config.port}`);
+  console.log(`MongoDB Connected 🔑 `);
+  console.log(`Server running on port 👥 ${config.port}`);
 });
 
 export { app, server, io };
