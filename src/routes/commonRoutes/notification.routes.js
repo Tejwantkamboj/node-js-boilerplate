@@ -17,3 +17,28 @@ router
   .route('/mark-as-read-selected')
   .put(validate(commonValidation.objectIdArrayValidation), markSelectedNotificationsAsRead);
 export default router;
+
+
+/**
+ * @swagger
+ * /notification:
+ *   get:
+ *     summary: Get notification list
+ *     tags: [Notifications]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           example: 1
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           example: 10
+ *     responses:
+ *       200:
+ *         description: Notification list retrieved successfully
+ */
