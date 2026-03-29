@@ -8,14 +8,6 @@ const __dirname = path.dirname(__filename);
 
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
-// const config = {
-//   env: process.env.NODE_ENV || 'development',
-//   port: Number(process.env.PORT) || 3000,
-//   mongoose: {
-//     url: process.env.MONGO_URI || process.env.MONGODB_URL || '',
-//   },
-// };
-
 const envVarsSchema = Joi.object()
   .keys({
     NODE_ENV: Joi.string().valid('production', 'development', 'test').required(),

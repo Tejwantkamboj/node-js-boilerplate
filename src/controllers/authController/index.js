@@ -1,4 +1,4 @@
-import { User, Token } from '../../modals/index.js';
+import { Token } from '../../modals/index.js';
 import { sendResponse, catchAsync } from '../../utils/index.js';
 import httpStatus from 'http-status';
 import { tokenService, userService } from '../../services/index.js';

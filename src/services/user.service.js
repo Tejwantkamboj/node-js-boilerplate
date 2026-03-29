@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import { ApiError } from '../utils/index.js';
-import { User, Token } from '../modals/index.js';
+import { User } from '../modals/index.js';
 import httpStatus from 'http-status';
 
 const createUser = async (userBody) => {

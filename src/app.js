@@ -31,14 +31,8 @@ const io = new Server(server, {
 
 app.set('io', io);
 
-// app.listen(config.port, async () => {
-//   const conn = await mongoose.connect(config.mongoose.url);
-//   console.log(`MongoDB Connected: ${conn.connection.host}`);
-//   console.log(`server is listening at port ${config.port}`);
-// });
-
 server.listen(config.port, async () => {
-  const conn = await mongoose.connect(config.mongoose.url);
+  await mongoose.connect(config.mongoose.url);
   console.log(`MongoDB Connected 🔑 `);
   console.log(`Server running on port 👥 ${config.port}`);
 });

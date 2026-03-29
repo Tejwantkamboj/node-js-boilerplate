@@ -1,7 +1,9 @@
 import moment from 'moment';
 
 function formatMongooseDate(dateObj) {
-  if (!dateObj) return null;
+  if (!dateObj) {
+    return null;
+  }
   return moment(dateObj).format('DD/MM/YYYY hh:mm A');
 }
 

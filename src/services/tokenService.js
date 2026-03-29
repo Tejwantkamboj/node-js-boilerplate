@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import moment from 'moment';
 import httpStatus from 'http-status';
 import { ApiError } from '../utils/index.js';
-import { User, Token } from '../modals/index.js';
+import { Token } from '../modals/index.js';
 import config from '../config/config.js';
 
 const generateToken = async (user, type) => {
@@ -88,8 +88,6 @@ const generateVerifyEmailToken = async (user) => {
   return verifyEmailToken.token;
 };
 
-const generateOtp = (user) => {};
-
 export default {
   generateToken,
   saveToken,
@@ -97,5 +95,4 @@ export default {
   verifyToken,
   generateResetPasswordToken,
   generateVerifyEmailToken,
-  generateOtp,
 };
