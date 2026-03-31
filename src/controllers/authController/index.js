@@ -4,6 +4,12 @@ import httpStatus from 'http-status';
 import { tokenService, userService } from '../../services/index.js';
 import { sendEmail } from '../../services/emailService.js';
 
+const authMe = catchAsync(async (req, res) => {
+  const { id } = req.user;
+  const user = await userService.getUserById(id);
+  sendResponse(res, httpStatus.OK, 'User fetched successfully', user);
+});
+
 const register = catchAsync(async (req, res) => {
   const user = await userService.createUser(req.body);
 
@@ -103,4 +109,13 @@ const verifyForgotPasswordOtp = catchAsync(async (req, res) => {
   sendResponse(res, httpStatus.OK, 'OTP verified successfully', token);
 });
 
-export { register, login, resetPasssword, changePassword, verifyRegisterOtp, forgotPassword, verifyForgotPasswordOtp };
+export {
+  authMe,
+  register,
+  login,
+  resetPasssword,
+  changePassword,
+  verifyRegisterOtp,
+  forgotPassword,
+  verifyForgotPasswordOtp,
+};

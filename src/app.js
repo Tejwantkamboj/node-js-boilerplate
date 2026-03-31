@@ -1,9 +1,7 @@
 import express from 'express';
 import cors from 'cors';
-import config from './config/config.js';
 import routes from './routes/index.js';
 import swaggerUi from 'swagger-ui-express';
-import mongoose from 'mongoose';
 import http from 'http';
 import { Server } from 'socket.io';
 import swaggerRoutes from './routes/swagger.js';
@@ -33,11 +31,4 @@ const io = new Server(server, {
 });
 
 app.set('io', io);
-
-server.listen(config.port, async () => {
-  await mongoose.connect(config.mongoose.url);
-  console.log(`MongoDB Connected 🔑 `);
-  console.log(`Server running on port 👥 ${config.port}`);
-});
-
 export { app, server, io };
