@@ -46,8 +46,8 @@ const userSchema = new Schema(
     },
     phone: {
       type: String,
-      // default: null,
-      // required: false,
+      default: null,
+      required: false,
       // validate: {
       //   validator: function (value) {
       //     if (value == null) return true;

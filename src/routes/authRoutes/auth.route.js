@@ -23,3 +23,180 @@ router.post('/reset-password', validate(authValidation.resetPassword), resetPass
 router.post('/verify-forgot-password-otp', validate(authValidation.verifyForgotPasswordOtp), verifyForgotPasswordOtp);
 
 export default router;
+
+/**
+ * @swagger
+ * /auth/register:
+ *   post:
+ *     summary: Register a new user
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: john@example.com
+ *               password:
+ *                 type: string
+ *                 example: Password@123
+ *               firstName:
+ *                 type: string
+ *                 example: John
+ *               lastName:
+ *                 type: string
+ *                 example: Doe
+ *     responses:
+ *       201:
+ *         description: Registred Successfully
+ */
+
+/**
+ * @swagger
+ * /auth/verify-register-otp:
+ *   post:
+ *     summary: verify-register-otp
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: john@example.com
+ *               otp:
+ *                 type: number
+ *                 example: 123456
+ *     responses:
+ *       200:
+ *         description: OTP verified successfully
+ */
+
+/**
+ * @swagger
+ * /auth/login:
+ *   post:
+ *     summary: login user
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: john@yopmail.com
+ *               password:
+ *                 type: string
+ *                 example: Password@123
+ *     responses:
+ *       200:
+ *         description: Logged in Successfully
+ */
+
+/**
+ * @swagger
+ * /auth/change-password:
+ *   post:
+ *     summary: change password
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               oldPassword:
+ *                 type: string
+ *                 example: OldPassword@123
+ *               newPassword:
+ *                 type: string
+ *                 example: NewPassword@123
+ *               otp:
+ *                 type: number
+ *                 example: 123456
+ *     responses:
+ *       200:
+ *         description: Password changed successfully
+ */
+
+/**
+ * @swagger
+ * /auth/forgot-password:
+ *   post:
+ *     summary: forgot password
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: john@example.com
+ *     responses:
+ *       200:
+ *         description: Forgot password OTP sent to email
+ */
+
+/**
+ * @swagger
+ * /auth/verify-forgot-password-otp:
+ *   post:
+ *     summary: verify forgot password OTP
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: john@example.com
+ *               otp:
+ *                 type: number
+ *                 example: 123456
+ *     responses:
+ *       200:
+ *         description: OTP verified successfully
+ */
+
+/**
+ * @swagger
+ * /auth/reset-password:
+ *   post:
+ *     summary: reset password
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: john@example.com
+ *               password:
+ *                 type: string
+ *                 example: NewPassword@123
+ *               token:
+ *                 type: string
+ *                 example: jwt-token
+ *     responses:
+ *       200:
+ *         description: Password reset successfully
+ */
