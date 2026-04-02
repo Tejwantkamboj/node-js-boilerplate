@@ -8,7 +8,7 @@ import swaggerRoutes from './routes/swagger.js';
 
 const app = express();
 app.use('/v1/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerRoutes));
-const server = http.createServer(app);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -21,7 +21,15 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use('/v1', routes);
+app.use((err, req, res, next) => {
+  const statusCode = err.statusCode || 500;
 
+  res.status(statusCode).json({
+    success: false,
+    message: err.message || 'Internal Server Error',
+  });
+});
+const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: '*',

@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import { server } from './app.js';
-import { config } from 'dotenv';
+import config from './config/config.js';
 
 mongoose
   .connect(config.mongoose.url, {
@@ -9,7 +9,7 @@ mongoose
   })
   .then(() => {
     console.log('Connected to MongoDB');
-    server.listen(PORT, () => {
+    server.listen(config.port, () => {
       console.log(`Server is running on port ${config.port}`);
     });
   })
