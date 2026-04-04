@@ -1,6 +1,6 @@
 import { Notification } from '../../modals/index.js';
 import { sendResponse, catchAsync } from '../../utils/index.js';
-import httpStatus from 'https';
+import httpStatus from 'http-status';
 
 const createNotification = catchAsync(async (req, res) => {
   const notification = await Notification.create(req.body);

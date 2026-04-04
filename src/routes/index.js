@@ -3,6 +3,7 @@ const router = Router();
 import CommonRoutes from './commonRoutes/index.js';
 import authRoutes from './authRoutes/auth.route.js';
 import userRoutes from './userRoutes/index.js';
+import adminRoutes from './adminRoutes/index.js';
 
 const defaultRoutes = [
   {
@@ -12,6 +13,10 @@ const defaultRoutes = [
   {
     path: '/auth',
     route: authRoutes,
+  },
+  {
+    path: '/admin',
+    route: adminRoutes,
   },
   {
     path: '/user',

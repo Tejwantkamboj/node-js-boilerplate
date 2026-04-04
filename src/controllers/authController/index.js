@@ -40,7 +40,7 @@ const login = catchAsync(async (req, res) => {
     sendResponse(res, httpStatus.BAD_REQUEST, 'Incorrect password');
   }
   const token = await tokenService.generateAuthTokens(user);
-  sendResponse(res, httpStatus.OK, 'Logged in Successfully', { user: user, token });
+  sendResponse(res, httpStatus.OK, 'Logged in Successfully', { user: user, tokens: token });
 });
 
 const changePassword = catchAsync(async (req, res) => {
