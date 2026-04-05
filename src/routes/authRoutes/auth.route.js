@@ -3,6 +3,7 @@ import authMiddleware from '../../middlewares/auth.js';
 import {
   changePassword,
   forgotPassword,
+  reSendVerificationOtp,
   login,
   authMe,
   register,
@@ -17,6 +18,7 @@ const router = express.Router();
 
 router.post('/register', validate(authValidation.register), register);
 router.post('/verify-register-otp', validate(authValidation.verifyRegisterOtp), verifyRegisterOtp);
+router.post('/resend-otp', validate(authValidation.forgotPassword), reSendVerificationOtp);
 router.post('/login', validate(authValidation.login), login);
 router.post('/change-password', authMiddleware, validate(authValidation.changePassword), changePassword);
 router.get('/me', authMiddleware, authMe);
@@ -167,6 +169,26 @@ export default router;
 
 /**
  * @swagger
+ * /auth/resend-otp:
+ *   post:
+ *     summary: re send email verification otp
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: john@example.com
+ *     responses:
+ *       200:
+ *         description: Verification OTP sended to email
+ */
+/**
+ * @swagger
  * /auth/verify-forgot-password-otp:
  *   post:
  *     summary: verify forgot password OTP
@@ -188,6 +210,9 @@ export default router;
  *       200:
  *         description: OTP verified successfully
  */
+
+
+
 
 /**
  * @swagger

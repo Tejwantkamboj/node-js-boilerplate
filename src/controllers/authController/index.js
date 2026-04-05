@@ -71,6 +71,16 @@ const forgotPassword = catchAsync(async (req, res) => {
   sendResponse(res, httpStatus.OK, 'Forgot password OTP sent to email', { otp: otp });
 });
 
+const reSendVerificationOtp = catchAsync(async (req, res) => {
+  const { email } = req.body;
+  const user = await userService.getUserByEmail(email);
+  const otp = userService.generateOtp();
+  user.otp = otp;
+  await user.save();
+  await sendEmail(user.email, 'Verify your email', `Your OTP for email verification is ${user.otp}`);
+  sendResponse(res, httpStatus.OK, 'Verification OTP sended to email', { otp: otp });
+});
+
 const resetPasssword = catchAsync(async (req, res) => {
   const { email, token, password } = req.body;
   const user = await userService.getUserByEmail(email);
@@ -118,4 +128,5 @@ export {
   verifyRegisterOtp,
   forgotPassword,
   verifyForgotPasswordOtp,
+  reSendVerificationOtp
 };
