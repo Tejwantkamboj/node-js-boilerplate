@@ -38,10 +38,7 @@ export const editUser = catchAsync(async (req, res) => {
 
 export const deleteUser = catchAsync(async (req, res) => {
   const { id } = req.params;
-  const user = await User.findByIdAndDelete(id);
-  if (!user) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
-  }
+  await User.findByIdAndDelete(id);
   sendResponse(res, httpStatus.OK, 'User Deleted');
 });
 
