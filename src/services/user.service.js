@@ -34,6 +34,8 @@ const getUserByEmail = async (email) => {
 
 const updateUserById = async (userId, updateBody) => {
   const user = await getUserById(userId);
+
+  await Salary.find().sort({ salary: 1 }).skip(1);
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
   }

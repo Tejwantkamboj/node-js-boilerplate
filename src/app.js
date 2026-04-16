@@ -5,6 +5,9 @@ import swaggerUi from 'swagger-ui-express';
 import http from 'http';
 import { Server } from 'socket.io';
 import swaggerRoutes from './routes/swagger.js';
+// import rateLimit from 'express-rate-limit';
+// import RedisStore from 'rate-limit-redis';
+// import Redis from 'ioredis';
 
 const app = express();
 app.use('/v1/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerRoutes));
@@ -19,8 +22,32 @@ const corsOptions = {
   credentials: true,
 };
 
+// const redisClient = new Redis(process.env.REDIS_URL);
+
+// redisClient.on('connect', () => {
+//   console.log('✅ Redis connected');
+// });
+
+// redisClient.on('error', (err) => {
+//   console.error('❌ Redis error:', err);
+// });
+
+// const limiter = rateLimit({
+//   windowMs: 60 * 1000,
+//   max: 100,
+
+//   keyGenerator: (req) => req.user?.id || req.ip,
+
+//   store: new RedisStore({
+//     sendCommand: (...args) => redisClient.call(...args),
+//   }),
+// });
+
+// app.set('trust proxy', 1);
+// app.use(limiter);
 app.use(cors(corsOptions));
 app.use('/v1', routes);
+
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;
 
