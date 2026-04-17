@@ -3,9 +3,9 @@ name: Push Validation
 on:
 push:
 branches:
-- "feature/*"
-- "bugfix/*"
-- "chore/*"
+  - 'feature/*'
+  - 'bugfix/*'
+  - 'chore/*'
 
 permissions:
 contents: write
@@ -15,7 +15,6 @@ jobs:
 validate-and-create-pr:
 runs-on: ubuntu-latest
 
-```
 steps:
   - name: Checkout Code
     uses: actions/checkout@v4
@@ -45,8 +44,7 @@ steps:
     uses: peter-evans/create-pull-request@v6
     with:
       token: ${{ secrets.GITHUB_TOKEN }}
-      title: "Auto PR: ${{ github.ref_name }}"
-      body: "Auto-created after CI passed ✅"
+      title: 'Auto PR: ${{ github.ref_name }}'
+      body: 'Auto-created after CI passed ✅'
       base: main
       branch: ${{ github.ref_name }}
-```
