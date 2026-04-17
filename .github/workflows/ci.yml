@@ -77,8 +77,11 @@ jobs:
           sleep 10
           kill $APP_PID
 
+      - name: Pull latest from branch
+        run: git pull origin ${{ github.ref_name }} --rebase --autostash
+
       - name: Push changes back to branch
-        run: git push origin ${{ github.ref_name }}
+        run: git push origin ${{ github.ref_name }} --force-with-lease
 
       - name: Check branch differences from master
         id: diff
