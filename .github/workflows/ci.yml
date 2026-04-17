@@ -1,9 +1,3 @@
-
-That triple backtick is valid in a README, but not in a GitHub Actions YAML file. GitHub is trying to parse it as YAML and errors there.
-
-Your file also has indentation problems above that. In GitHub Actions, it should look like this structure:
-
-```yaml
 name: Push Validation
 
 on:
