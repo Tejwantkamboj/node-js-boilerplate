@@ -35,8 +35,15 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: ${{ github.ref_name }}
           fetch-depth: 0
+          token: ${{ github.token }}
+
+      - name: Setup Git
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git config --local --add safe.directory "$GITHUB_WORKSPACE"
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -52,8 +59,6 @@ jobs:
 
       - name: Commit auto-fixed changes
         run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
           git add -A
           if ! git diff-index --quiet --cached HEAD --; then
             git commit -m "chore: auto-fix linting issues"
@@ -73,7 +78,7 @@ jobs:
           kill $APP_PID
 
       - name: Push changes back to branch
-        run: git push origin HEAD:${{ github.ref_name }}
+        run: git push origin ${{ github.ref_name }}
 
       - name: Check branch differences from master
         id: diff
@@ -89,12 +94,12 @@ jobs:
         if: steps.diff.outputs.has_changes == 'true'
         uses: peter-evans/create-pull-request@v5
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          title: "✅ Auto PR: ${{ github.ref_name }}"
+          token: ${{ github.token }}
+          title: '✅ Auto PR: ${{ github.ref_name }}'
           body: |
             ## Automated Pull Request
             This PR was automatically created after successful validation on branch `${{ github.ref_name }}`.
-            
+
             **Validation status:**
             - ✅ Lint passed
             - ✅ Tests passed
