@@ -46,6 +46,19 @@ jobs:
       - name: Lint Check
         run: npm run lint
 
+      - name: Lint Fix
+        run: npm run lint -- --fix
+
+      - name: Commit and Push Changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add -A
+          if ! git diff-index --quiet HEAD --; then
+            git commit -m "chore: auto-fix linting issues"
+            git push origin HEAD:${{ github.ref_name }}
+          fi
+
       - name: Test Check
         run: npm test
 
