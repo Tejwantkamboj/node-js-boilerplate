@@ -8,7 +8,8 @@ on:
       - "chore/*"
 
 permissions:
-  contents: read
+  contents: write
+  pull-requests: write
 
 jobs:
   validate:
@@ -54,3 +55,22 @@ jobs:
           APP_PID=$!
           sleep 10
           kill $APP_PID
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore: auto-merge validated changes"
+          title: "✅ Auto PR: ${{ github.ref_name }}"
+          body: |
+            ## Automated Pull Request
+            
+            This PR was automatically created after successful validation on branch `${{ github.ref_name }}`.
+            
+            **Validation Status:** ✅ All checks passed
+            - Lint Check
+            - Test Check
+            - App Boot Check
+          branch: ${{ github.ref_name }}
+          base: master
+          delete-branch: false
