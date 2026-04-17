@@ -8,46 +8,49 @@ on:
       - "chore/*"
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
 
 jobs:
-  validate-and-create-pr:
+  validate:
     runs-on: ubuntu-latest
+    services:
+      mongodb:
+        image: mongo:7
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongosh --eval 'db.adminCommand({ ping: 1 })'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
-    env: 
-    NODE_ENV: test 
-    MONGODB_URL: mongodb://localhost:27017/test 
-    JWT_SECRET: testsecret
+    env:
+      NODE_ENV: test
+      MONGODB_URL: mongodb://127.0.0.1:27017/node-boilerplate
+      JWT_SECRET: testsecret
 
-    steps: 
-    - name: Checkout Code 
-    uses: actions/checkout@v4
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-    - name: Setup Node 
-    uses: actions/setup-node@v4 
-    with: node-version: "22" 
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
 
-    - name: Install Dependencies 
-    run: npm ci 
+      - name: Install Dependencies
+        run: npm ci
 
-    - name: Lint Check 
-    run: npm run lint 
+      - name: Lint Check
+        run: npm run lint
 
-    - name: Test Check 
-    run: npm test 
+      - name: Test Check
+        run: npm test
 
-    - name: App Boot Check 
-    run: | 
-    node src/index.js &
-     sleep 
-     5 kill $! 
-    - name: Create Pull Request 
-    if: success() 
-    uses: peter-evans/create-pull-request@v6 
-    with: 
-    token: ${{ secrets.GITHUB_TOKEN }} 
-    title: "Auto PR: ${{ github.ref_name }}" 
-    body: "Auto-created after CI passed" 
-    base: main 
-    branch: ${{ github.ref_name }}
+      - name: App Boot Check
+        run: |
+          node src/index.js &
+          APP_PID=$!
+          sleep 10
+          kill $APP_PID
