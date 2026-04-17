@@ -74,3 +74,31 @@ jobs:
 
       - name: Push changes back to branch
         run: git push origin HEAD:${{ github.ref_name }}
+
+      - name: Check branch differences from master
+        id: diff
+        run: |
+          git fetch origin master
+          if git diff --quiet origin/master...HEAD; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Pull Request
+        if: steps.diff.outputs.has_changes == 'true'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: "✅ Auto PR: ${{ github.ref_name }}"
+          body: |
+            ## Automated Pull Request
+            This PR was automatically created after successful validation on branch `${{ github.ref_name }}`.
+            
+            **Validation status:**
+            - ✅ Lint passed
+            - ✅ Tests passed
+            - ✅ App boot successful
+          branch: ${{ github.ref_name }}
+          base: master
+          delete-branch: false
