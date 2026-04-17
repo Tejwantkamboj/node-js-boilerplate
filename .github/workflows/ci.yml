@@ -34,6 +34,9 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -47,14 +50,13 @@ jobs:
       - name: Lint Fix
         run: npm run lint:fix
 
-      - name: Commit and Push Changes
+      - name: Commit auto-fixed changes
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add -A
           if ! git diff-index --quiet --cached HEAD --; then
             git commit -m "chore: auto-fix linting issues"
-            git push origin HEAD:${{ github.ref_name }}
           fi
 
       - name: Lint Check
@@ -70,28 +72,5 @@ jobs:
           sleep 10
           kill $APP_PID
 
-      - name: Check for changes vs master
-        id: changes
-        run: |
-          git fetch origin master
-          if git diff --quiet origin/master...HEAD; then
-            echo "no_changes=true" >> $GITHUB_OUTPUT
-          else
-            echo "no_changes=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Create Pull Request
-        if: steps.changes.outputs.no_changes == 'false'
-        uses: peter-evans/create-pull-request@v5
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          title: '✅ Auto PR: ${{ github.ref_name }}'
-          body: |
-            ## Automated Pull Request
-            This PR was automatically created after successful validation.
-            ✅ Lint passed
-            ✅ Tests passed
-            ✅ App boot successful
-          branch: ${{ github.ref_name }}
-          base: master
-          delete-branch: false
+      - name: Push changes back to branch
+        run: git push origin HEAD:${{ github.ref_name }}
