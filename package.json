@@ -37,7 +37,6 @@
     "mongoose": "^8.18.0",
     "morgan": "^1.10.1",
     "nodemailer": "^7.0.5",
-    "nodemon": "^3.1.10",
     "passport": "^0.7.0",
     "path": "^0.12.7",
     "rate-limit-redis": "^4.3.1",
@@ -53,6 +52,7 @@
     "globals": "^17.4.0",
     "husky": "^8.0.0",
     "jest": "^30.3.0",
-    "lint-staged": "^16.4.0"
+    "lint-staged": "^16.4.0",
+    "nodemon": "^3.1.14"
   }
 }

@@ -1,0 +1,52 @@
+name: Push Validation
+
+on:
+push:
+branches:
+- "feature/*"
+- "bugfix/*"
+- "chore/*"
+
+permissions:
+contents: write
+pull-requests: write
+
+jobs:
+validate-and-create-pr:
+runs-on: ubuntu-latest
+
+```
+steps:
+  - name: Checkout Code
+    uses: actions/checkout@v4
+
+  - name: Setup Node
+    uses: actions/setup-node@v4
+    with:
+      node-version: 18
+
+  - name: Install Dependencies
+    run: npm ci
+
+  - name: Lint Check
+    run: npm run lint
+
+  - name: Test Check
+    run: npm test
+
+  - name: App Boot Check
+    run: |
+      node src/index.js &
+      sleep 5
+      kill $!
+
+  - name: Create Pull Request
+    if: success()
+    uses: peter-evans/create-pull-request@v6
+    with:
+      token: ${{ secrets.GITHUB_TOKEN }}
+      title: "Auto PR: ${{ github.ref_name }}"
+      body: "Auto-created after CI passed ✅"
+      base: main
+      branch: ${{ github.ref_name }}
+```
