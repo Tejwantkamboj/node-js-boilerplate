@@ -1,89 +1,101 @@
 name: Push Validation
 
 on:
-  push:
-    branches:
-      - "feature/*"
-      - "bugfix/*"
-      - "chore/*"
+push:
+branches:
+- "feature/*"
+- "bugfix/*"
+- "chore/*"
 
 permissions:
-  contents: write
-  pull-requests: write
+contents: write
+pull-requests: write
 
 jobs:
-  validate:
-    runs-on: ubuntu-latest
-    services:
-      mongodb:
-        image: mongo:7
-        ports:
-          - 27017:27017
-        options: >-
-          --health-cmd "mongosh --eval 'db.adminCommand({ ping: 1 })'"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+validate:
+runs-on: ubuntu-latest
 
-    env:
-      NODE_ENV: test
-      MONGODB_URL: mongodb://127.0.0.1:27017/node-boilerplate
-      JWT_SECRET: testsecret
+services:
+  mongodb:
+    image: mongo:7
+    ports:
+      - 27017:27017
+    options: >-
+      --health-cmd "mongosh --eval 'db.adminCommand({ ping: 1 })'"
+      --health-interval 10s
+      --health-timeout 5s
+      --health-retries 5
 
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
+env:
+  NODE_ENV: test
+  MONGODB_URL: mongodb://127.0.0.1:27017/node-boilerplate
+  JWT_SECRET: testsecret
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-          cache: npm
+steps:
+  - name: Checkout Code
+    uses: actions/checkout@v4
+    with:
+      fetch-depth: 0   # IMPORTANT for diff check
 
-      - name: Install Dependencies
-        run: npm ci
+  - name: Setup Node
+    uses: actions/setup-node@v4
+    with:
+      node-version: "22"
+      cache: npm
 
-      - name: Lint Check
-        run: npm run lint
+  - name: Install Dependencies
+    run: npm ci
 
-      - name: Lint Fix
-        run: npm run lint -- --fix
+  - name: Lint Check
+    run: npm run lint
 
-      - name: Commit and Push Changes
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add -A
-          if ! git diff-index --quiet HEAD --; then
-            git commit -m "chore: auto-fix linting issues"
-            git push origin HEAD:${{ github.ref_name }}
-          fi
+  - name: Auto Fix Lint Issues
+    run: npm run lint -- --fix
 
-      - name: Test Check
-        run: npm test
+  - name: Commit and Push Changes (if any)
+    run: |
+      git config --local user.email "action@github.com"
+      git config --local user.name "GitHub Action"
+      git add -A
+      if ! git diff-index --quiet HEAD --; then
+        git commit -m "chore: auto-fix lint issues"
+        git push origin HEAD:${{ github.ref_name }}
+      fi
 
-      - name: App Boot Check
-        run: |
-          node src/index.js &
-          APP_PID=$!
-          sleep 10
-          kill $APP_PID
+  - name: Run Tests
+    run: npm test
 
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v5
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "chore: auto-merge validated changes"
-          title: "✅ Auto PR: ${{ github.ref_name }}"
-          body: |
-            ## Automated Pull Request
-            
-            This PR was automatically created after successful validation on branch `${{ github.ref_name }}`.
-            
-            **Validation Status:** ✅ All checks passed
-            - Lint Check
-            - Test Check
-            - App Boot Check
-          branch: ${{ github.ref_name }}
-          base: master
-          delete-branch: false
+  - name: App Boot Check
+    run: |
+      node src/index.js &
+      APP_PID=$!
+      sleep 10
+      kill $APP_PID
+
+  - name: Check for changes vs master
+    id: changes
+    run: |
+      git fetch origin master
+      if git diff --quiet origin/master...HEAD; then
+        echo "no_changes=true" >> $GITHUB_OUTPUT
+      else
+        echo "no_changes=false" >> $GITHUB_OUTPUT
+      fi
+
+  - name: Create Pull Request
+    if: steps.changes.outputs.no_changes == 'false'
+    uses: peter-evans/create-pull-request@v5
+    with:
+      token: ${{ secrets.GITHUB_TOKEN }}
+      title: "✅ Auto PR: ${{ github.ref_name }}"
+      body: |
+        ## Automated Pull Request
+        
+        This PR was automatically created after successful validation.
+        
+        ✅ Lint passed  
+        ✅ Tests passed  
+        ✅ App boot successful  
+      branch: ${{ github.ref_name }}
+      base: master
+      delete-branch: false
