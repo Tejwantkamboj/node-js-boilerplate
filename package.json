@@ -12,6 +12,7 @@
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --passWithNoTests",
     "test:watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch",
     "test:coverage": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",
+    "start": "node src/index.js",
     "dev": "nodemon --exec \"npm run lint && node -r dotenv/config src/index.js\"",
     "prepare": "husky install"
   },
@@ -50,7 +51,7 @@
     "@eslint/js": "^10.0.1",
     "eslint": "^10.1.0",
     "globals": "^17.4.0",
-    "husky": "^8.0.0",
+    "husky": "^8.0.3",
     "jest": "^30.3.0",
     "lint-staged": "^16.4.0",
     "nodemon": "^3.1.14"

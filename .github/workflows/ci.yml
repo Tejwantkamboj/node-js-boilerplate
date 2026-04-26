@@ -4,12 +4,10 @@ on:
   push:
     branches:
       - 'feature/*'
+      - 'bug/*'
       - 'bugfix/*'
+      - 'changes/*'
       - 'chore/*'
-
-permissions:
-  contents: write
-  pull-requests: write
 
 jobs:
   validate:
@@ -34,35 +32,20 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          fetch-depth: 0
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '20'
           cache: npm
 
       - name: Install Dependencies
         run: npm ci
 
-      - name: Lint Fix
-        run: npm run lint:fix
-
-      - name: Commit auto-fixed changes
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add -A
-          if ! git diff-index --quiet --cached HEAD --; then
-            git commit -m "chore: auto-fix linting issues"
-          fi
-
       - name: Lint Check
         run: npm run lint
 
-      - name: Test Check
+      - name: Run Tests
         run: npm test
 
       - name: App Boot Check
@@ -71,34 +54,3 @@ jobs:
           APP_PID=$!
           sleep 10
           kill $APP_PID
-
-      - name: Push changes back to branch
-        run: git push origin HEAD:${{ github.ref_name }}
-
-      - name: Check branch differences from master
-        id: diff
-        run: |
-          git fetch origin master
-          if git diff --quiet origin/master...HEAD; then
-            echo "has_changes=false" >> $GITHUB_OUTPUT
-          else
-            echo "has_changes=true" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Create Pull Request
-        if: steps.diff.outputs.has_changes == 'true'
-        uses: peter-evans/create-pull-request@v5
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          title: "✅ Auto PR: ${{ github.ref_name }}"
-          body: |
-            ## Automated Pull Request
-            This PR was automatically created after successful validation on branch `${{ github.ref_name }}`.
-            
-            **Validation status:**
-            - ✅ Lint passed
-            - ✅ Tests passed
-            - ✅ App boot successful
-          branch: ${{ github.ref_name }}
-          base: master
-          delete-branch: false

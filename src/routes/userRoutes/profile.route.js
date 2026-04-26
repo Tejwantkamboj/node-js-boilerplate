@@ -46,6 +46,12 @@ export default router;
  *               avatar:
  *                 type: string
  *                 example: https://example.com/image.jpg
+ *               age:
+ *                 type: number
+ *                 example: 25
+ *               required:
+ *                 - name
+ *                 - email
  *     responses:
  *       200:
  *         User profile updated successfully

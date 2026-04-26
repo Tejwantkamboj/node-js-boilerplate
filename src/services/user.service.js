@@ -24,6 +24,52 @@ const getUserById = async (id) => {
   return user;
 };
 
+const meApiData = async (id) => {
+  User.aggregate([
+    {
+      $match: {
+        _id: { $ne: new mongoose.Types.ObjectId(id) },
+        ...(search && {
+          $or: [{ name: { $regex: search, $options: 'i' } }, { email: { $regex: search, $options: 'i' } }],
+        }),
+      },
+    },
+    {
+      $facet: {
+        data: [
+          { $sort: { createdAt: -1 } },
+          { $skip: (page - 1) * limit },
+          { $limit: limit },
+          {
+            $lookup: {
+              from: 'orders',
+              localField: '_id',
+              foreignField: 'userId',
+              as: 'orderSummary',
+            },
+          },
+          {
+            $addFields: {
+              ordersCount: { $size: '$orderSummary' },
+            },
+          },
+          {
+            $project: {
+              name: 1,
+              email: 1,
+              firstName: 1,
+              lastName: 1,
+              avatar: 1,
+              createdAt: 1,
+              ordersCount: 1,
+            },
+          },
+        ],
+        totalResults: [{ $count: 'count' }],
+      },
+    },
+  ]);
+};
 const getUserByEmail = async (email) => {
   const user = await User.findOne({ email });
   if (!user) {
@@ -55,4 +101,5 @@ export default {
   getUserByEmail,
   queryUsers,
   updateUserById,
+  meApiData,
 };

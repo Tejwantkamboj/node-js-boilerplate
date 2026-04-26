@@ -1,12 +1,20 @@
 import path from 'path';
 import { fileURLToPath } from 'url';
+import fs from 'fs';
 import Joi from 'joi';
 import dotenv from 'dotenv';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-dotenv.config({ path: path.resolve(__dirname, '../.env') });
+const envPaths = [
+  path.resolve(process.cwd(), '.env'),
+  path.resolve(__dirname, '../.env'),
+];
+
+const envPath = envPaths.find((currentPath) => fs.existsSync(currentPath));
+
+dotenv.config(envPath ? { path: envPath } : undefined);
 
 const envVarsSchema = Joi.object()
   .keys({
