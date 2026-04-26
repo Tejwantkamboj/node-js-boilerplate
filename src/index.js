@@ -3,10 +3,7 @@ import { server } from './app.js';
 import config from './config/config.js';
 
 mongoose
-  .connect(config.mongoose.url, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+  .connect(config.mongoose.url)
   .then(() => {
     console.log('Connected to MongoDB');
     server.listen(config.port, () => {
