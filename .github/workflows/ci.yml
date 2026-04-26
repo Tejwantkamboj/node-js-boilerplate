@@ -9,14 +9,6 @@ on:
       - 'changes/*'
       - 'chore/*'
 
-concurrency:
-  group: push-validation-${{ github.ref }}
-  cancel-in-progress: true
-
-permissions:
-  contents: write
-  pull-requests: write
-
 jobs:
   validate:
     runs-on: ubuntu-latest
@@ -33,7 +25,6 @@ jobs:
           --health-retries 5
 
     env:
-      BRANCH_NAME: ${{ github.ref_name }}
       NODE_ENV: test
       MONGODB_URL: mongodb://127.0.0.1:27017/node-boilerplate
       JWT_SECRET: testsecret
@@ -41,34 +32,20 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-        with:
-          ref: ${{ env.BRANCH_NAME }}
-          fetch-depth: 0
-          token: ${{ github.token }}
-          persist-credentials: true
-
-      - name: Setup Git
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git config --local --add safe.directory "$GITHUB_WORKSPACE"
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '20'
           cache: npm
 
       - name: Install Dependencies
         run: npm ci
 
-      - name: Lint Fix
-        run: npm run lint:fix
-
       - name: Lint Check
         run: npm run lint
 
-      - name: Test Check
+      - name: Run Tests
         run: npm test
 
       - name: App Boot Check
@@ -77,102 +54,3 @@ jobs:
           APP_PID=$!
           sleep 10
           kill $APP_PID
-
-      - name: Detect auto-fixed changes
-        id: autofix
-        run: |
-          git add -A
-          if git diff-index --quiet --cached HEAD --; then
-            echo "has_changes=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "has_changes=true" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Commit auto-fixed changes
-        if: steps.autofix.outputs.has_changes == 'true'
-        run: git commit -m "chore: auto-fix linting issues"
-
-      - name: Rebase autofix commit on latest branch
-        if: steps.autofix.outputs.has_changes == 'true'
-        run: |
-          git fetch origin "$BRANCH_NAME"
-          git rebase "origin/$BRANCH_NAME"
-
-      - name: Push changes back to branch
-        if: steps.autofix.outputs.has_changes == 'true'
-        run: git push origin HEAD:"$BRANCH_NAME"
-
-      - name: Report validation failure
-        if: failure()
-        run: |
-          echo "::error::Push failed because validation did not pass. Fix the failing checks and push again."
-          {
-            echo "## Push failed"
-            echo
-            echo "Validation did not pass, so no changes were pushed back to \`$BRANCH_NAME\`."
-          } >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Report validation success
-        if: success()
-        run: |
-          {
-            echo "## Validation passed"
-            echo
-            echo "Branch \`$BRANCH_NAME\` passed validation."
-            if [ "${{ steps.autofix.outputs.has_changes }}" = "true" ]; then
-              echo "Auto-fixed changes were pushed back to the branch."
-            else
-              echo "No auto-fixed changes were needed."
-            fi
-          } >> "$GITHUB_STEP_SUMMARY"
-
-  create-pr:
-    runs-on: ubuntu-latest
-    needs: validate
-    if: needs.validate.result == 'success'
-    env:
-      BRANCH_NAME: ${{ github.ref_name }}
-
-    steps:
-      - name: Create or reuse PR to master
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ github.token }}
-          script: |
-            const owner = context.repo.owner;
-            const repo = context.repo.repo;
-            const head = `${owner}:${process.env.BRANCH_NAME}`;
-            const base = "master";
-
-            const { data: openPrs } = await github.rest.pulls.list({
-              owner,
-              repo,
-              state: "open",
-              head,
-              base,
-            });
-
-            if (openPrs.length > 0) {
-              core.notice(`PR already exists: #${openPrs[0].number}`);
-              return;
-            }
-
-            const { data: pr } = await github.rest.pulls.create({
-              owner,
-              repo,
-              head: process.env.BRANCH_NAME,
-              base,
-              title: `✅ Auto PR: ${process.env.BRANCH_NAME}`,
-              body: [
-                "## Automated Pull Request",
-                "",
-                `This PR was automatically created after successful validation on branch \`${process.env.BRANCH_NAME}\`.`,
-                "",
-                "**Validation status:**",
-                "- ✅ Lint passed",
-                "- ✅ Tests passed",
-                "- ✅ App boot successful",
-              ].join("\n"),
-            });
-
-            core.notice(`Created PR #${pr.number}`);
