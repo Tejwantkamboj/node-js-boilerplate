@@ -7,10 +7,7 @@ import dotenv from 'dotenv';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const envPaths = [
-  path.resolve(process.cwd(), '.env'),
-  path.resolve(__dirname, '../.env'),
-];
+const envPaths = [path.resolve(process.cwd(), '.env'), path.resolve(__dirname, '../.env')];
 
 const envPath = envPaths.find((currentPath) => fs.existsSync(currentPath));
 
@@ -31,6 +28,12 @@ const envVarsSchema = Joi.object()
     SMTP_USERNAME: Joi.string(),
     SMTP_PASSWORD: Joi.string(),
     EMAIL_FROM: Joi.string(),
+    REDIS_HOST: Joi.string().default('127.0.0.1'),
+    REDIS_PORT: Joi.number().default(6379),
+    REDIS_PASSWORD: Joi.string(),
+    CACHE_PREFIX: Joi.string().default('app_cache'),
+    CACHE_TTL_USER: Joi.number().default(3600),
+    CACHE_TTL_SESSION: Joi.number().default(604800),
   })
   .unknown();
 
@@ -67,6 +70,16 @@ const config = {
       },
     },
     from: envVars.EMAIL_FROM,
+  },
+  redis: {
+    host: envVars.REDIS_HOST,
+    port: envVars.REDIS_PORT,
+    password: envVars.REDIS_PASSWORD,
+    cachePrefix: envVars.CACHE_PREFIX || 'app_cache',
+    ttl: {
+      user: envVars.CACHE_TTL_USER || 3600,
+      session: envVars.CACHE_TTL_SESSION || 604800,
+    },
   },
 };
 
