@@ -28,7 +28,7 @@ const meApiData = async (id) => {
   User.aggregate([
     {
       $match: {
-        _id: { $ne: new mongoose.Types.ObjectId(id) },
+        _id:new mongoose.Types.ObjectId(id) ,
         ...(search && {
           $or: [{ name: { $regex: search, $options: 'i' } }, { email: { $regex: search, $options: 'i' } }],
         }),
