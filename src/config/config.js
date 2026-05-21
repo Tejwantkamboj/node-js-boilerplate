@@ -25,6 +25,7 @@ const envVarsSchema = Joi.object()
     JWT_VERIFY_EMAIL_EXPIRATION_MINUTES: Joi.number().default(10),
     SMTP_HOST: Joi.string(),
     SMTP_PORT: Joi.number(),
+    SMTP_SECURE: Joi.boolean().default(false),
     SMTP_USERNAME: Joi.string(),
     SMTP_PASSWORD: Joi.string(),
     EMAIL_FROM: Joi.string(),
@@ -34,7 +35,7 @@ const envVarsSchema = Joi.object()
     CACHE_PREFIX: Joi.string().default('app_cache'),
     CACHE_TTL_USER: Joi.number().default(3600),
     CACHE_TTL_SESSION: Joi.number().default(604800),
-    AGENDA_PROCESS_EVERY: Joi.string().default('30 seconds'),
+    AGENDA_PROCESS_EVERY: Joi.string().default('5 seconds'),
     AGENDA_MAX_CONCURRENCY: Joi.number().default(20),
     AGENDA_DEFAULT_CONCURRENCY: Joi.number().default(5),
     AGENDA_DEFAULT_LOCK_LIFETIME: Joi.number().default(10 * 60 * 1000),
@@ -68,6 +69,7 @@ const config = {
     smtp: {
       host: envVars.SMTP_HOST,
       port: envVars.SMTP_PORT,
+      secure: envVars.SMTP_SECURE,
       auth: {
         user: envVars.SMTP_USERNAME,
         pass: envVars.SMTP_PASSWORD,
