@@ -34,6 +34,10 @@ const envVarsSchema = Joi.object()
     CACHE_PREFIX: Joi.string().default('app_cache'),
     CACHE_TTL_USER: Joi.number().default(3600),
     CACHE_TTL_SESSION: Joi.number().default(604800),
+    AGENDA_PROCESS_EVERY: Joi.string().default('30 seconds'),
+    AGENDA_MAX_CONCURRENCY: Joi.number().default(20),
+    AGENDA_DEFAULT_CONCURRENCY: Joi.number().default(5),
+    AGENDA_DEFAULT_LOCK_LIFETIME: Joi.number().default(10 * 60 * 1000),
   })
   .unknown();
 
@@ -80,6 +84,12 @@ const config = {
       user: envVars.CACHE_TTL_USER || 3600,
       session: envVars.CACHE_TTL_SESSION || 604800,
     },
+  },
+  agenda: {
+    agendaProcessEvery: envVars.AGENDA_PROCESS_EVERY,
+    maxConcurrency: envVars.AGENDA_MAX_CONCURRENCY,
+    defaultConcurrency: envVars.AGENDA_DEFAULT_CONCURRENCY,
+    defaultLockLifetime: envVars.AGENDA_DEFAULT_LOCK_LIFETIME,
   },
 };
 

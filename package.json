@@ -20,6 +20,8 @@
     "*.js": "eslint --fix"
   },
   "dependencies": {
+    "@agendajs/mongo-backend": "^4.0.2",
+    "agenda": "^6.2.5",
     "bcrypt": "^6.0.0",
     "body-parser": "^2.2.0",
     "compression": "^1.8.1",

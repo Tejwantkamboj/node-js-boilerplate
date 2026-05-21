@@ -3,6 +3,7 @@ import { sendResponse, catchAsync } from '../../utils/index.js';
 import httpStatus from 'http-status';
 import { tokenService, userService } from '../../services/index.js';
 import { sendEmail } from '../../services/emailService.js';
+import authEmailQueue from '../../queues/auth.email.queues.js';
 
 const authMe = catchAsync(async (req, res) => {
   const { id } = req.user;
@@ -15,7 +16,7 @@ const register = catchAsync(async (req, res) => {
 
   user.otp = userService.generateOtp();
   await user.save();
-  await sendEmail(user.email, 'Verify your email', `Your OTP for email verification is ${user.otp}`);
+  await authEmailQueue.registerEmailJob(user.email, 'Verify your email', `Your OTP for email verification is ${user.otp}`);
   sendResponse(res, httpStatus.CREATED, 'Registred Successfully', user);
 });
 
