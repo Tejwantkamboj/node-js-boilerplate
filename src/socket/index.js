@@ -1,7 +1,8 @@
 import { io } from '../app.js';
 import jwt from 'jsonwebtoken';
-import {config} from './config/index.js';
+import { config } from '../config/index.js';
 import { User } from '../models/index.js';
+import socketRateLimiter from '../middlewares/socketRateLimiter.js';
 
 const socketAuth = async (socket, next) => {
   const token = socket.handshake.headers?.token;
@@ -31,8 +32,8 @@ const socketAuth = async (socket, next) => {
 };
 
 io.use(socketAuth);
+io.use(socketRateLimiter);
 
-// ✅ CONNECTION
 io.on('connection', (socket) => {
   console.log('User connected:', socket.user._id);
 

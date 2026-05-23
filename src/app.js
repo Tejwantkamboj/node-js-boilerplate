@@ -5,26 +5,25 @@ import swaggerUi from 'swagger-ui-express';
 import http from 'http';
 import { Server } from 'socket.io';
 import swaggerRoutes from './routes/swagger.js';
+import { apiRateLimiter } from './middlewares/apiRateLimiter.js';
 
 const app = express();
 app.use('/v1/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerRoutes));
 
-
-
 const corsOptions = {
-  origin: ['http://localhost:5173','https://react-tanstack-boilerplate.vercel.app'],
+  origin: ['http://localhost:5173', 'https://react-tanstack-boilerplate.vercel.app'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
 };
 
-
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use('/v1', apiRateLimiter);
 app.use('/v1', routes);
 
-app.use((err, req, res, next) => {
+app.use((err, req, res) => {
   const statusCode = err.statusCode || 500;
 
   res.status(statusCode).json({

@@ -3,7 +3,6 @@ import { fileURLToPath } from 'url';
 import fs from 'fs';
 import Joi from 'joi';
 import dotenv from 'dotenv';
-import { count } from 'console';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -43,6 +42,8 @@ const envVarsSchema = Joi.object()
     QUEUE_COUNT: Joi.number().default(3),
     QUEUE_CONCURRENCY: Joi.number().default(5),
     QUEUE_REMOVE_ON_FAIL: Joi.number().default(7 * 24 * 3600),
+    rateLimiterPoints: Joi.number().default(15),
+    rateLimiterDuration: Joi.number().default(60),
   })
   .unknown();
 
@@ -99,6 +100,10 @@ const config = {
     ageOnFail: envVars.QUEUE_AGE,
     concurrency: envVars.QUEUE_CONCURRENCY,
     removeOnFail: envVars.QUEUE_REMOVE_ON_FAIL,
+  },
+  rateLimiter: {
+    points: envVars.rateLimiterPoints,
+    duration: envVars.rateLimiterDuration,
   },
 };
 
