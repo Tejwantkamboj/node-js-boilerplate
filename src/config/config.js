@@ -3,6 +3,7 @@ import { fileURLToPath } from 'url';
 import fs from 'fs';
 import Joi from 'joi';
 import dotenv from 'dotenv';
+import { count } from 'console';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -35,6 +36,13 @@ const envVarsSchema = Joi.object()
     CACHE_PREFIX: Joi.string().default('app_cache'),
     CACHE_TTL_USER: Joi.number().default(3600),
     CACHE_TTL_SESSION: Joi.number().default(604800),
+    QUEUE_ATTEMPTS: Joi.number().default(3),
+    QUEUE_BACKOFF: Joi.number().default(5000),
+    QUEUE_DELAY: Joi.number().default(1000),
+    QUEUE_AGE: Joi.number().default(3600),
+    QUEUE_COUNT: Joi.number().default(3),
+    QUEUE_CONCURRENCY: Joi.number().default(5),
+    QUEUE_REMOVE_ON_FAIL: Joi.number().default(7 * 24 * 3600),
   })
   .unknown();
 
@@ -82,6 +90,15 @@ const config = {
       user: envVars.CACHE_TTL_USER || 3600,
       session: envVars.CACHE_TTL_SESSION || 604800,
     },
+  },
+  queues: {
+    attempts: envVars.QUEUE_ATTEMPTS,
+    delay: envVars.QUEUE_DELAY,
+    ageOnComplete: envVars.QUEUE_AGE,
+    count: envVars.QUEUE_COUNT,
+    ageOnFail: envVars.QUEUE_AGE,
+    concurrency: envVars.QUEUE_CONCURRENCY,
+    removeOnFail: envVars.QUEUE_REMOVE_ON_FAIL,
   },
 };
 

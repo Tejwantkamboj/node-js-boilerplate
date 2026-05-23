@@ -1,24 +1,26 @@
+import { config } from './index.js';
+
 const queueConfig = {
   defaultJobOptions: {
-    attempts: 5,
+    attempts: config.queues.attempts,
 
     backoff: {
       type: 'exponential',
-      delay: 3000,
+      delay: config.queues.backoff,
     },
 
     removeOnComplete: {
-      age: 3600,
-      count: 1000,
+      age: config.queues.ageOnComplete,
+      count: config.queues.count,
     },
 
     removeOnFail: {
-      age: 7 * 24 * 3600,
+      age: config.queues.removeOnFail,
     },
   },
 
   workerOptions: {
-    concurrency: 20,
+    concurrency: config.queues.concurrency,
   },
 };
 
