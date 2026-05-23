@@ -2,8 +2,7 @@ import { Token } from '../../modals/index.js';
 import { sendResponse, catchAsync } from '../../utils/index.js';
 import httpStatus from 'http-status';
 import { tokenService, userService } from '../../services/index.js';
-import { sendEmail } from '../../services/emailService.js';
-import authEmailQueue from '../../queues/auth.email.queues.js';
+import emailQueue from '../../queues/email.queues.js';
 
 const authMe = catchAsync(async (req, res) => {
   const { id } = req.user;
@@ -16,7 +15,11 @@ const register = catchAsync(async (req, res) => {
 
   user.otp = userService.generateOtp();
   await user.save();
-  await authEmailQueue.registerEmailJob(user.email, 'Verify your email', `Your OTP for email verification is ${user.otp}`);
+  await emailQueue.sendRegisterEmail({
+    email: user.email,
+    subject: 'Verify your email',
+    message: `Your OTP for email verification is ${user.otp}`,
+  });
   sendResponse(res, httpStatus.CREATED, 'Registred Successfully', user);
 });
 
@@ -68,7 +71,7 @@ const forgotPassword = catchAsync(async (req, res) => {
   const otp = userService.generateOtp();
   user.otp = otp;
   await user.save();
-  await sendEmail(user.email, 'Forgot Password OTP', `Your OTP for forgot password is ${otp}`);
+  await authEmailQueue.sendForgotPasswordEmail(user.email, 'Forgot Password OTP', `Your OTP for forgot password is ${otp}`);
   sendResponse(res, httpStatus.OK, 'Forgot password OTP sent to email', { otp: otp });
 });
 
@@ -78,7 +81,7 @@ const reSendVerificationOtp = catchAsync(async (req, res) => {
   const otp = userService.generateOtp();
   user.otp = otp;
   await user.save();
-  await sendEmail(user.email, 'Verify your email', `Your OTP for email verification is ${user.otp}`);
+  await authEmailQueue.sendRegisterEmail(user.email, 'Verify your email', `Your OTP for email verification is ${user.otp}`);
   sendResponse(res, httpStatus.OK, 'Verification OTP sended to email', { otp: otp });
 });
 
@@ -129,5 +132,5 @@ export {
   verifyRegisterOtp,
   forgotPassword,
   verifyForgotPasswordOtp,
-  reSendVerificationOtp
+  reSendVerificationOtp,
 };

@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import config from '../config/config.js';
+import {config} from '../config/index.js';
 
 const adminAuthMiddleware = (req, res, next) => {
   try {

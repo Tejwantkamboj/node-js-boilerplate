@@ -3,7 +3,7 @@ import moment from 'moment';
 import httpStatus from 'http-status';
 import { ApiError } from '../utils/index.js';
 import { Token } from '../modals/index.js';
-import config from '../config/config.js';
+import { config } from '../config/index.js';
 
 const generateToken = async (user, type) => {
   let expires;

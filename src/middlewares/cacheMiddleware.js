@@ -1,4 +1,4 @@
-import redis from '../lib/redis.js';
+import redis from '../config/redis.js';
 
 const normalize = (value = '') => String(value).toLowerCase().trim();
 

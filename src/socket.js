@@ -1,6 +1,6 @@
 import { io } from '../app.js';
 import jwt from 'jsonwebtoken';
-import config from './config/config.js';
+import {config} from './config/index.js';
 import { User } from '../models/index.js';
 
 const socketAuth = async (socket, next) => {
