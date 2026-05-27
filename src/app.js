@@ -4,7 +4,7 @@ import routes from './routes/index.js';
 import swaggerUi from 'swagger-ui-express';
 import http from 'http';
 import { Server } from 'socket.io';
-import swaggerRoutes from './routes/swagger.js';
+import swaggerRoutes from './swagger/index.js';
 import { apiRateLimiter } from './middlewares/apiRateLimiter.js';
 
 const app = express();

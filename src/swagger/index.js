@@ -6,7 +6,7 @@ const options = {
     info: {
       title: 'Node JS Boilerplate API',
       version: '1.0.0',
-      description: 'API documentation for all routes under /src/routes',
+      description: 'API documentation for the Node JS Boilerplate routes.',
     },
     servers: [
       {
@@ -24,7 +24,7 @@ const options = {
       },
     },
   },
-  apis: ['./src/routes/**/*.js'],
+  apis: ['./src/swagger/**/*swagger.js'],
 };
 
 const specs = swaggerJsdoc(options);
